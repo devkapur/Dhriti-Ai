@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # PostgreSQL connection string (service name = db from docker-compose)
-SQLALCHEMY_DATABASE_URL = "postgresql://accunai:accunai123@db:5432/accunai_db"
+SQLALCHEMY_DATABASE_URL = "postgresql://Dhriti_ai:Dhriti_ai123@db:5432/Dhriti_ai_db"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -3,7 +3,7 @@ version: "3.9"
 services:
   backend:
     build: .
-    container_name: accunai-backend
+    container_name: Dhriti_ai-backend
     ports:
       - "8000:8000"
     volumes:
@@ -13,14 +13,14 @@ services:
 
   db:
     image: postgres:15
-    container_name: accunai-db
+    container_name: Dhriti_ai-db
     restart: always
     environment:
-      POSTGRES_USER: accunai
-      POSTGRES_PASSWORD: accunai123
-      POSTGRES_DB: accunai_db
+      POSTGRES_USER: Dhriti_ai
+      POSTGRES_PASSWORD: Dhriti_ai123
+      POSTGRES_DB: Dhriti_ai_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

@@ -2,9 +2,9 @@ from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
 
-SECRET_KEY = "supersecretkey"   # Change in production
+SECRET_KEY = "supersecretkey"   # Production me .env se lo
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
