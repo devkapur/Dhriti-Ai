@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    container_name: accunai-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: accunai-db
+    restart: always
+    environment:
+      POSTGRES_USER: accunai
+      POSTGRES_PASSWORD: accunai123
+      POSTGRES_DB: accunai_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
