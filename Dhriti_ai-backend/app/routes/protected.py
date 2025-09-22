@@ -20,4 +20,4 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.get("/")
 def read_protected(current_user: str = Depends(get_current_user)):
-    return {"msg": f"Hello, {current_user}! You are authenticated ✅"}
+    return {"email": current_user}
