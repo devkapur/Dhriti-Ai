@@ -23,6 +23,7 @@ function Topbar() {
       <div className="px-4 py-3 flex items-center justify-end gap-4">
         <button
           className="relative p-2 rounded-lg hover:bg-slate-100 transition"
+          
           aria-label="Notifications"
         >
           🔔

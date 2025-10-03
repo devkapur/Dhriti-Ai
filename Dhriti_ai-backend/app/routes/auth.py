@@ -48,5 +48,5 @@ def login(request: LoginRequest, db: Session = Depends(database.get_db)):
     if not user or not security.verify_password(request.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
-    token = security.create_access_token(data={"sub": user.email})
+    token = security.create_access_token(data={"sub": user.email, "role": user.role})
     return {"access_token": token, "token_type": "bearer"}
