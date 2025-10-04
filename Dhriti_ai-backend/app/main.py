@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from app.database import Base, engine
-from app.routes import auth, protected
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.database import Base, engine
+from app.routes import auth, protected, tasks
 
 app = FastAPI()
 
@@ -16,9 +17,12 @@ app.add_middleware(
 
 Base.metadata.create_all(bind=engine)
 
+
 @app.get("/")
 def home():
     return {"msg": "Accun AI Backend Running ✅"}
 
+
 app.include_router(auth.router)
 app.include_router(protected.router)
+app.include_router(tasks.router)
