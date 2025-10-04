@@ -1,17 +1,25 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { getToken, getUserRole } from '../utils/auth';
 
-const ProtectedRoute = ({ children, allowedRoles }) => {
+const ProtectedRoute = ({ allowedRoles = [], children }) => {
+  const location = useLocation();
   const token = getToken();
-  const userRole = getUserRole();
+  const role = getUserRole();
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(userRole)) {
-    return <Navigate to="/dashboard" replace />;
+  const roleAllowed = allowedRoles.length === 0 || (role && allowedRoles.includes(role));
+  if (!roleAllowed) {
+    if (role === 'admin') {
+      return <Navigate to="/dashboard" replace />;
+    }
+    if (role === 'user') {
+      return <Navigate to="/tasks" replace />;
+    }
+    return <Navigate to="/login" replace />;
   }
 
   return children;

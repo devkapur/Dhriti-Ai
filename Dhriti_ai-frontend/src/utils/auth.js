@@ -1,28 +1,26 @@
-import { jwtDecode } from "jwt-decode";
+const TOKEN_KEY = 'auth_token';
+const ROLE_KEY = 'user_role';
 
-export const getToken = () => {
-  return localStorage.getItem("token");
-};
+// --- Token --- //
+
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
 
 export const setToken = (token) => {
-  localStorage.setItem("token", token);
+  localStorage.setItem(TOKEN_KEY, token);
 };
 
 export const removeToken = () => {
-  localStorage.removeItem("token");
+  localStorage.removeItem(TOKEN_KEY);
 };
 
-export const getDecodedToken = () => {
-  const token = getToken();
-  if (!token) return null;
-  try {
-    return jwtDecode(token);
-  } catch (error) {
-    return null;
-  }
+// --- Role --- //
+
+export const getUserRole = () => localStorage.getItem(ROLE_KEY);
+
+export const setUserRole = (role) => {
+    localStorage.setItem(ROLE_KEY, role);
 };
 
-export const getUserRole = () => {
-  const decodedToken = getDecodedToken();
-  return decodedToken ? decodedToken.role : null;
+export const removeUserRole = () => {
+    localStorage.removeItem(ROLE_KEY);
 };

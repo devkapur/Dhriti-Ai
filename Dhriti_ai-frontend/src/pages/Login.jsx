@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setToken } from '../utils/auth';
+import { setToken, setUserRole } from '../utils/auth';
 
 function Login() {
   const navigate = useNavigate();
@@ -44,7 +44,23 @@ function Login() {
       const data = await response.json();
       setToken(data.access_token);
 
-      navigate('/dashboard');
+      const userRole = data.role;
+      if (userRole) {
+          setUserRole(userRole);
+          // Redirect based on role, directly from the login page
+          if (userRole === 'user') {
+              navigate('/tasks');
+          } else if (userRole === 'admin') {
+              navigate('/dashboard');
+          } else {
+              // Handle unexpected role by showing an error
+              setError(`Login successful, but role '${userRole}' is not recognized.`);
+          }
+      } else {
+          // Handle missing role in API response
+          setError('Login successful, but no role was provided by the server.');
+      }
+
     } catch (err) {
       setError(err.message);
     } finally {
