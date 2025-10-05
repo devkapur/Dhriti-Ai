@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app import database
 from app.models.project import Project, ProjectAssignment, TaskReview
@@ -166,7 +166,26 @@ def list_users(
     _: TokenData = Depends(require_admin),
     db: Session = Depends(database.get_db),
 ):
-    return db.query(User).order_by(User.email.asc()).all()
+    users = (
+        db.query(User)
+        .options(selectinload(User.profile))
+        .order_by(User.email.asc())
+        .all()
+    )
+    summaries = []
+    for user in users:
+        profile = user.profile
+        summaries.append(
+            UserSummary(
+                id=user.id,
+                email=user.email,
+                role=user.role,
+                name=profile.name if profile else None,
+                phone=profile.phone if profile else None,
+                status=profile.status if profile else None,
+            )
+        )
+    return summaries
 
 
 @router.post("/admin/assignments", response_model=ProjectAssignmentResponse)

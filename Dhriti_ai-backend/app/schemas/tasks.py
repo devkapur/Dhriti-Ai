@@ -83,6 +83,9 @@ class UserSummary(BaseModel):
     id: int
     email: str
     role: str
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    status: Optional[str] = None
 
     class Config:
         orm_mode = True

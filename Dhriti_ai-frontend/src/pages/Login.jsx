@@ -46,19 +46,17 @@ function Login() {
 
       const userRole = data.role;
       if (userRole) {
-          setUserRole(userRole);
-          // Redirect based on role, directly from the login page
-          if (userRole === 'user') {
-              navigate('/tasks');
-          } else if (userRole === 'admin') {
-              navigate('/dashboard');
-          } else {
-              // Handle unexpected role by showing an error
-              setError(`Login successful, but role '${userRole}' is not recognized.`);
-          }
+        setUserRole(userRole);
+
+        if (userRole === 'admin') {
+          navigate('/dashboard');
+        } else if (['user', 'expert', 'vendor'].includes(userRole)) {
+          navigate('/tasks');
+        } else {
+          setError(`Login successful, but role '${userRole}' is not recognized.`);
+        }
       } else {
-          // Handle missing role in API response
-          setError('Login successful, but no role was provided by the server.');
+        setError('Login successful, but no role was provided by the server.');
       }
 
     } catch (err) {

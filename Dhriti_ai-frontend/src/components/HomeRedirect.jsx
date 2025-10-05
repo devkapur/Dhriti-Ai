@@ -11,7 +11,7 @@ const HomeRedirect = () => {
     }
 
     // Redirect user to their designated starting page
-    if (role === 'user') {
+    if (['user', 'expert', 'vendor'].includes(role)) {
         return <Navigate to="/tasks" replace />;
     }
 

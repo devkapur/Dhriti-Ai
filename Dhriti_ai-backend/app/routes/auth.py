@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app import database
-from app.models.user import User
+from app.models.user import User, UserProfile
 from app.schemas.user import LoginRequest, UserCreate
 from app.utils import security
 
@@ -19,11 +19,25 @@ def register_user(request: UserCreate, db: Session = Depends(database.get_db)):
 
     hashed_pw = security.hash_password(request.password)
     new_user = User(email=request.email, hashed_password=hashed_pw, role=request.role or "user")
+    profile = UserProfile(
+        name=request.name,
+        phone=request.phone,
+        status=request.status or "Active",
+    )
+    new_user.profile = profile
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
 
-    return {"msg": "User registered successfully", "id": new_user.id, "role": new_user.role}
+    return {
+        "msg": "User registered successfully",
+        "id": new_user.id,
+        "role": new_user.role,
+        "email": new_user.email,
+        "name": profile.name,
+        "phone": profile.phone,
+        "status": profile.status,
+    }
 
 
 @router.post("/login")

@@ -40,7 +40,7 @@ function App() {
       <Route
         path="/tasks"
         element={
-          <ProtectedRoute allowedRoles={['user', 'admin']}>
+        <ProtectedRoute allowedRoles={['user', 'expert', 'vendor', 'admin']}>
             <Tasks />
           </ProtectedRoute>
         }

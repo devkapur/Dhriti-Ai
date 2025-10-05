@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -18,3 +18,21 @@ class User(Base):
     reviews = relationship(
         "TaskReview", back_populates="user", cascade="all, delete-orphan"
     )
+    profile = relationship(
+        "UserProfile",
+        uselist=False,
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+
+class UserProfile(Base):
+    __tablename__ = "user_profiles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    phone = Column(String, nullable=True)
+    status = Column(String, default="Active")
+
+    user = relationship("User", back_populates="profile")
