@@ -19,6 +19,18 @@ SAMPLE_PROJECTS = [
         "name": "BinPref_Prod_PortugueseBP2",
         "status": "Active",
         "default_avg_task_time_minutes": 30,
+        "description": "Portuguese binary preference production checks",
+        "data_category": "vision",
+        "project_type": "annotation",
+        "task_type": "Image tagging",
+        "review_time_minutes": 15,
+        "max_users_per_task": 2,
+        "auto_submit_task": False,
+        "allow_reviewer_edit": True,
+        "allow_reviewer_push_back": True,
+        "allow_reviewer_feedback": True,
+        "reviewer_screen_mode": "full",
+        "reviewer_guidelines": "Verify intent accuracy and highlight ambiguous items.",
         "completed_tasks": 466,
         "pending_tasks": 0,
         "reviews": [
@@ -30,6 +42,18 @@ SAMPLE_PROJECTS = [
         "name": "VisionTag_EN_v3",
         "status": "Paused",
         "default_avg_task_time_minutes": 12,
+        "description": "English vision tagging v3",
+        "data_category": "vision",
+        "project_type": "annotation",
+        "task_type": "Bounding box",
+        "review_time_minutes": 10,
+        "max_users_per_task": 1,
+        "auto_submit_task": False,
+        "allow_reviewer_edit": True,
+        "allow_reviewer_push_back": True,
+        "allow_reviewer_feedback": True,
+        "reviewer_screen_mode": "split",
+        "reviewer_guidelines": "Ensure boxes cover objects entirely.",
         "completed_tasks": 1220,
         "pending_tasks": 34,
         "reviews": [
@@ -40,6 +64,18 @@ SAMPLE_PROJECTS = [
         "name": "ASR_Hindi_Release",
         "status": "Active",
         "default_avg_task_time_minutes": 18,
+        "description": "Hindi ASR release validation",
+        "data_category": "speech",
+        "project_type": "review",
+        "task_type": "Transcription QA",
+        "review_time_minutes": 12,
+        "max_users_per_task": 3,
+        "auto_submit_task": True,
+        "allow_reviewer_edit": True,
+        "allow_reviewer_push_back": True,
+        "allow_reviewer_feedback": True,
+        "reviewer_screen_mode": "full",
+        "reviewer_guidelines": "Double-check proper nouns and loan words.",
         "completed_tasks": 809,
         "pending_tasks": 12,
         "reviews": [],
@@ -78,6 +114,20 @@ def seed_projects(session: Session, user: User) -> None:
             )
             session.add(project)
             session.flush()
+
+        # sync extended metadata regardless of existing record
+        project.description = project_data.get("description")
+        project.data_category = project_data.get("data_category")
+        project.project_type = project_data.get("project_type")
+        project.task_type = project_data.get("task_type")
+        project.review_time_minutes = project_data.get("review_time_minutes")
+        project.max_users_per_task = project_data.get("max_users_per_task")
+        project.auto_submit_task = project_data.get("auto_submit_task", False)
+        project.allow_reviewer_edit = project_data.get("allow_reviewer_edit", True)
+        project.allow_reviewer_push_back = project_data.get("allow_reviewer_push_back", True)
+        project.allow_reviewer_feedback = project_data.get("allow_reviewer_feedback", True)
+        project.reviewer_screen_mode = project_data.get("reviewer_screen_mode", "full")
+        project.reviewer_guidelines = project_data.get("reviewer_guidelines")
 
         assignment = (
             session.query(ProjectAssignment)

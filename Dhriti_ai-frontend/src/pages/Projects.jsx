@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar.jsx'
 import Topbar from '../components/Topbar.jsx'
 import DataTable from '../components/DataTable.jsx'
@@ -13,16 +14,15 @@ function Projects() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const [addOpen, setAddOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
   const [assignError, setAssignError] = useState('')
   const [selectedProject, setSelectedProject] = useState(null)
-  const [addError, setAddError] = useState('')
 
   const [users, setUsers] = useState([])
   const [usersLoading, setUsersLoading] = useState(false)
   const [usersError, setUsersError] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function loadProjects() {
@@ -42,10 +42,10 @@ function Projects() {
         }
         const data = await response.json()
         const mapped = data.map(p => ({
+          ...p,
           id: p.id,
           name: p.name,
           status: p.status,
-          default_avg_task_time_minutes: p.default_avg_task_time_minutes,
         }))
         setRows(mapped)
       } catch (err) {
@@ -118,53 +118,6 @@ function Projects() {
     }
   }
 
-  const onSaveNew = async e => {
-    e.preventDefault()
-    const f = new FormData(e.currentTarget)
-    setAddError('')
-    setError('')
-    const payload = {
-      name: f.get('name'),
-      status: f.get('status'),
-      default_avg_task_time_minutes: f.get('defaultTime') ? Number(f.get('defaultTime')) : null,
-    }
-
-    try {
-      const token = getToken()
-      if (!token) {
-        throw new Error('You need to log in again.')
-      }
-
-      const response = await fetch(`${API_BASE}/tasks/admin/projects`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      })
-
-      if (!response.ok) {
-        const payloadErr = await response.json().catch(() => ({}))
-        throw new Error(payloadErr.detail || 'Unable to create project.')
-      }
-
-      const created = await response.json()
-      setRows(r => [
-        {
-          id: created.id,
-          name: created.name,
-          status: created.status,
-          default_avg_task_time_minutes: created.default_avg_task_time_minutes,
-        },
-        ...r,
-      ])
-      setAddOpen(false)
-    } catch (err) {
-      setAddError(err.message)
-    }
-  }
-
   const onAssignSubmit = async e => {
     e.preventDefault()
     if (!selectedProject) return
@@ -220,7 +173,7 @@ function Projects() {
             </div>
             <div className="flex gap-2">
               <button onClick={() => setUploadOpen(true)} className="px-3 py-2 rounded-lg border hover:bg-slate-50">Upload Data</button>
-              <button onClick={() => setAddOpen(true)} className="px-3 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700">Add Project</button>
+              <button onClick={() => navigate('/projects/new')} className="px-3 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700">Add Project</button>
             </div>
           </div>
 
@@ -233,43 +186,6 @@ function Projects() {
           ) : (
             <DataTable columns={columns} data={rows} onEdit={openAssignModal} searchable />
           )}
-
-          <Modal
-            title="Add Project"
-            isOpen={addOpen}
-            onClose={() => {
-              setAddOpen(false)
-              setAddError('')
-            }}
-          >
-            <form onSubmit={onSaveNew} className="space-y-3">
-              {addError && (
-                <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{addError}</div>
-              )}
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm mb-1">Project Name</label>
-                  <input name="name" required className="w-full px-3 py-2 rounded-lg border" />
-                </div>
-                <div>
-                  <label className="block text-sm mb-1">Status</label>
-                  <select name="status" className="w-full px-3 py-2 rounded-lg border">
-                    <option>Active</option>
-                    <option>Paused</option>
-                    <option>Completed</option>
-                  </select>
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-sm mb-1">Default Task Time (minutes)</label>
-                  <input name="defaultTime" type="number" min="1" className="w-full px-3 py-2 rounded-lg border" placeholder="Optional" />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <button type="button" onClick={() => setAddOpen(false)} className="px-3 py-2 rounded-lg border">Cancel</button>
-                <button type="submit" className="px-3 py-2 rounded-lg bg-brand-600 text-white">Save</button>
-              </div>
-            </form>
-          </Modal>
 
           <Modal
             title={selectedProject ? `Assign ${selectedProject.name}` : 'Assign Project'}

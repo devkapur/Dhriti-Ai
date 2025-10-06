@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from pydantic import BaseModel, Field
 
@@ -47,7 +47,19 @@ class TasksDashboardResponse(BaseModel):
 class ProjectCreate(BaseModel):
     name: str = Field(min_length=3)
     status: str = Field(default="Active", min_length=1)
+    description: Optional[str] = None
+    data_category: Optional[str] = None
+    project_type: Optional[str] = None
+    task_type: Optional[str] = None
     default_avg_task_time_minutes: Optional[int] = Field(default=None, ge=1)
+    review_time_minutes: Optional[int] = Field(default=None, ge=1)
+    max_users_per_task: Optional[int] = Field(default=None, ge=1)
+    auto_submit_task: bool = False
+    allow_reviewer_edit: bool = True
+    allow_reviewer_push_back: bool = True
+    allow_reviewer_feedback: bool = True
+    reviewer_screen_mode: Literal["split", "full"] = "full"
+    reviewer_guidelines: Optional[str] = None
 
 
 class ProjectResponse(BaseModel):
@@ -55,6 +67,18 @@ class ProjectResponse(BaseModel):
     name: str
     status: str
     default_avg_task_time_minutes: Optional[int]
+    description: Optional[str]
+    data_category: Optional[str]
+    project_type: Optional[str]
+    task_type: Optional[str]
+    review_time_minutes: Optional[int]
+    max_users_per_task: Optional[int]
+    auto_submit_task: bool
+    allow_reviewer_edit: bool
+    allow_reviewer_push_back: bool
+    allow_reviewer_feedback: bool
+    reviewer_screen_mode: Literal["split", "full"]
+    reviewer_guidelines: Optional[str]
 
     class Config:
         orm_mode = True

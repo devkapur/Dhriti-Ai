@@ -145,7 +145,19 @@ def create_project(
     project = Project(
         name=payload.name,
         status=payload.status,
+        description=payload.description,
+        data_category=payload.data_category,
+        project_type=payload.project_type,
+        task_type=payload.task_type,
         default_avg_task_time_minutes=payload.default_avg_task_time_minutes,
+        review_time_minutes=payload.review_time_minutes,
+        max_users_per_task=payload.max_users_per_task,
+        auto_submit_task=payload.auto_submit_task,
+        allow_reviewer_edit=payload.allow_reviewer_edit,
+        allow_reviewer_push_back=payload.allow_reviewer_push_back,
+        allow_reviewer_feedback=payload.allow_reviewer_feedback,
+        reviewer_screen_mode=payload.reviewer_screen_mode,
+        reviewer_guidelines=payload.reviewer_guidelines,
     )
     db.add(project)
     db.commit()
