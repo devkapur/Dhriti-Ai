@@ -152,6 +152,7 @@ def create_project(
         default_avg_task_time_minutes=payload.default_avg_task_time_minutes,
         review_time_minutes=payload.review_time_minutes,
         max_users_per_task=payload.max_users_per_task,
+        association=payload.association,
         auto_submit_task=payload.auto_submit_task,
         allow_reviewer_edit=payload.allow_reviewer_edit,
         allow_reviewer_push_back=payload.allow_reviewer_push_back,
@@ -170,7 +171,41 @@ def list_projects(
     _: TokenData = Depends(require_admin),
     db: Session = Depends(database.get_db),
 ):
-    return db.query(Project).order_by(Project.name.asc()).all()
+    totals_subquery = (
+        db.query(
+            ProjectAssignment.project_id.label("project_id"),
+            (
+                func.coalesce(func.sum(ProjectAssignment.completed_tasks), 0)
+                + func.coalesce(func.sum(ProjectAssignment.pending_tasks), 0)
+            ).label("total_tasks_added"),
+            func.coalesce(func.sum(ProjectAssignment.completed_tasks), 0).label(
+                "total_tasks_completed"
+            ),
+        )
+        .group_by(ProjectAssignment.project_id)
+        .subquery()
+    )
+
+    rows = (
+        db.query(Project, totals_subquery.c.total_tasks_added, totals_subquery.c.total_tasks_completed)
+        .outerjoin(totals_subquery, totals_subquery.c.project_id == Project.id)
+        .order_by(Project.name.asc())
+        .all()
+    )
+
+    result: list[ProjectResponse] = []
+    for project, total_added, total_completed in rows:
+        total_tasks_added = int(total_added or 0)
+        total_tasks_completed = int(total_completed or 0)
+        payload = ProjectResponse.from_orm(project).copy(
+            update={
+                "total_tasks_added": total_tasks_added,
+                "total_tasks_completed": total_tasks_completed,
+            }
+        )
+        result.append(payload)
+
+    return result
 
 
 @router.get("/admin/users", response_model=List[UserSummary])

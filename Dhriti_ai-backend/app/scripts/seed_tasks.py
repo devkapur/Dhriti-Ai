@@ -31,6 +31,7 @@ SAMPLE_PROJECTS = [
         "allow_reviewer_feedback": True,
         "reviewer_screen_mode": "full",
         "reviewer_guidelines": "Verify intent accuracy and highlight ambiguous items.",
+        "association": "Admin",
         "completed_tasks": 466,
         "pending_tasks": 0,
         "reviews": [
@@ -54,6 +55,7 @@ SAMPLE_PROJECTS = [
         "allow_reviewer_feedback": True,
         "reviewer_screen_mode": "split",
         "reviewer_guidelines": "Ensure boxes cover objects entirely.",
+        "association": "Admin",
         "completed_tasks": 1220,
         "pending_tasks": 34,
         "reviews": [
@@ -76,6 +78,7 @@ SAMPLE_PROJECTS = [
         "allow_reviewer_feedback": True,
         "reviewer_screen_mode": "full",
         "reviewer_guidelines": "Double-check proper nouns and loan words.",
+        "association": "Admin",
         "completed_tasks": 809,
         "pending_tasks": 12,
         "reviews": [],
@@ -122,6 +125,7 @@ def seed_projects(session: Session, user: User) -> None:
         project.task_type = project_data.get("task_type")
         project.review_time_minutes = project_data.get("review_time_minutes")
         project.max_users_per_task = project_data.get("max_users_per_task")
+        project.association = project_data.get("association")
         project.auto_submit_task = project_data.get("auto_submit_task", False)
         project.allow_reviewer_edit = project_data.get("allow_reviewer_edit", True)
         project.allow_reviewer_push_back = project_data.get("allow_reviewer_push_back", True)

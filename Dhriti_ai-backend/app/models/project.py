@@ -29,6 +29,7 @@ class Project(Base):
     default_avg_task_time_minutes = Column(Integer, nullable=True)
     review_time_minutes = Column(Integer, nullable=True)
     max_users_per_task = Column(Integer, nullable=True)
+    association = Column(String, default="Admin", nullable=True)
     auto_submit_task = Column(Boolean, default=False, nullable=False)
     allow_reviewer_edit = Column(Boolean, default=True, nullable=False)
     allow_reviewer_push_back = Column(Boolean, default=True, nullable=False)

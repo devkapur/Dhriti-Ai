@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar.jsx'
 import Topbar from '../components/Topbar.jsx'
-import DataTable from '../components/DataTable.jsx'
 import Modal from '../components/Modal.jsx'
 import FileUpload from '../components/FileUpload.jsx'
 import { getToken } from '../utils/auth.js'
@@ -57,35 +56,6 @@ function Projects() {
 
     loadProjects()
   }, [])
-
-  const columns = useMemo(
-    () => [
-      { Header: 'Project Name', accessor: 'name' },
-      {
-        Header: 'Status',
-        accessor: 'status',
-        Cell: v => (
-          <span
-            className={`px-2 py-1 rounded-full text-xs ${
-              v === 'Active'
-                ? 'bg-emerald-50 text-emerald-700'
-                : v === 'Completed'
-                ? 'bg-blue-50 text-blue-700'
-                : 'bg-amber-50 text-amber-700'
-            }`}
-          >
-            {v}
-          </span>
-        ),
-      },
-      {
-        Header: 'Default Task Time',
-        accessor: 'default_avg_task_time_minutes',
-        Cell: value => (value ? `${value} min` : '—'),
-      },
-    ],
-    []
-  )
 
   const openAssignModal = async project => {
     setSelectedProject(project)
@@ -183,8 +153,64 @@ function Projects() {
 
           {loading ? (
             <div className="rounded-lg border border-slate-200 bg-white px-4 py-6 text-center text-slate-500">Loading projects…</div>
+          ) : rows.length === 0 ? (
+            <div className="rounded-lg border border-slate-200 bg-white px-4 py-6 text-center text-slate-500">No projects yet. Add one to get started.</div>
           ) : (
-            <DataTable columns={columns} data={rows} onEdit={openAssignModal} searchable />
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <table className="min-w-full border-collapse">
+                <thead className="bg-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="p-4">Name</th>
+                    <th className="p-4">Project Status</th>
+                    <th className="p-4">Total Tasks Added</th>
+                    <th className="p-4">Total Tasks Completed</th>
+                    <th className="p-4">Association</th>
+                    <th className="p-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                  {rows.map(project => (
+                    <tr key={project.id} className="hover:bg-slate-50">
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => openAssignModal(project)}
+                            className="flex size-8 items-center justify-center rounded-full border border-slate-200 text-lg text-slate-400 transition hover:border-brand-500 hover:text-brand-600"
+                            aria-label={`Assign ${project.name}`}
+                          >
+                            ›
+                          </button>
+                          <div>
+                            <div className="font-medium text-slate-900">{project.name}</div>
+                            {project.task_type ? (
+                              <div className="text-xs uppercase text-slate-400">{project.task_type}</div>
+                            ) : null}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 align-middle">
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                          {project.status}
+                        </span>
+                      </td>
+                      <td className="p-4 align-middle font-medium">{(project.total_tasks_added ?? 0).toLocaleString()}</td>
+                      <td className="p-4 align-middle font-medium text-emerald-600">{(project.total_tasks_completed ?? 0).toLocaleString()}</td>
+                      <td className="p-4 align-middle text-slate-600">{project.association ? project.association.toUpperCase() : '—'}</td>
+                      <td className="p-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => openAssignModal(project)}
+                          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600"
+                        >
+                          Assign
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
 
           <Modal

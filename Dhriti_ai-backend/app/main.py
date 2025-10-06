@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.database import Base, engine
+from app.database import Base, engine, run_startup_migrations
 from app.routes import auth, dashboard, protected, tasks, users
 
 app = FastAPI()
@@ -16,6 +16,7 @@ app.add_middleware(
 )
 
 Base.metadata.create_all(bind=engine)
+run_startup_migrations()
 
 
 @app.get("/")

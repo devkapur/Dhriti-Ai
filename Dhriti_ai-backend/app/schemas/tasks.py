@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class AssignedProject(BaseModel):
@@ -15,8 +15,7 @@ class AssignedProject(BaseModel):
     pending_tasks: int
     status: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskReviewSummary(BaseModel):
@@ -27,8 +26,7 @@ class TaskReviewSummary(BaseModel):
     comment: Optional[str]
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TasksStats(BaseModel):
@@ -54,6 +52,7 @@ class ProjectCreate(BaseModel):
     default_avg_task_time_minutes: Optional[int] = Field(default=None, ge=1)
     review_time_minutes: Optional[int] = Field(default=None, ge=1)
     max_users_per_task: Optional[int] = Field(default=None, ge=1)
+    association: Optional[str] = None
     auto_submit_task: bool = False
     allow_reviewer_edit: bool = True
     allow_reviewer_push_back: bool = True
@@ -73,15 +72,17 @@ class ProjectResponse(BaseModel):
     task_type: Optional[str]
     review_time_minutes: Optional[int]
     max_users_per_task: Optional[int]
+    association: Optional[str]
     auto_submit_task: bool
     allow_reviewer_edit: bool
     allow_reviewer_push_back: bool
     allow_reviewer_feedback: bool
     reviewer_screen_mode: Literal["split", "full"]
     reviewer_guidelines: Optional[str]
+    total_tasks_added: int = 0
+    total_tasks_completed: int = 0
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ProjectAssignmentRequest(BaseModel):
@@ -102,6 +103,8 @@ class ProjectAssignmentResponse(BaseModel):
     completed_tasks: int
     pending_tasks: int
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class UserSummary(BaseModel):
     id: int
@@ -111,5 +114,4 @@ class UserSummary(BaseModel):
     phone: Optional[str] = None
     status: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

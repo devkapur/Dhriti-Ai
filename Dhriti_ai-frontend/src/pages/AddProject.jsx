@@ -16,6 +16,7 @@ const initialForm = {
   taskTime: '',
   reviewTime: '',
   maxUsers: '',
+  association: 'Admin',
   autoSubmit: false,
   reviewerEdit: true,
   reviewerPushBack: true,
@@ -65,6 +66,7 @@ function AddProject() {
         default_avg_task_time_minutes: form.taskTime ? Number(form.taskTime) : null,
         review_time_minutes: form.reviewTime ? Number(form.reviewTime) : null,
         max_users_per_task: form.maxUsers ? Number(form.maxUsers) : null,
+        association: form.association.trim() ? form.association.trim() : null,
         auto_submit_task: form.autoSubmit,
         allow_reviewer_edit: form.reviewerEdit,
         allow_reviewer_push_back: form.reviewerPushBack,
@@ -182,6 +184,15 @@ function AddProject() {
                     <option value="review">Review</option>
                     <option value="collection">Collection</option>
                   </select>
+                </div>
+                <div className="md:col-span-1">
+                  <label className="block text-sm font-medium text-slate-600">Association</label>
+                  <input
+                    value={form.association}
+                    onChange={handleChange('association')}
+                    placeholder="e.g. Admin, Client, Internal"
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-slate-400 focus:outline-none"
+                  />
                 </div>
                 <div className="md:col-span-1">
                   <label className="block text-sm font-medium text-slate-600">Task Type</label>
@@ -350,4 +361,3 @@ function AddProject() {
 }
 
 export default AddProject
-
