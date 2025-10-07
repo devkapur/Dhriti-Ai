@@ -6,6 +6,7 @@ import Users from './pages/Users.jsx';
 import Projects from './pages/Projects.jsx';
 import AddProject from './pages/AddProject.jsx';
 import Tasks from './pages/Tasks.jsx';
+import ProjectTaskBoard from './pages/ProjectTaskBoard.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomeRedirect from './components/HomeRedirect.jsx';
 
@@ -35,6 +36,22 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['admin']}>
             <Projects />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:projectId/board"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <ProjectTaskBoard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:projectId/board/:tabId"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <ProjectTaskBoard />
           </ProtectedRoute>
         }
       />

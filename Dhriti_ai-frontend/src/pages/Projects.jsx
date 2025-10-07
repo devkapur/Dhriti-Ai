@@ -197,14 +197,27 @@ function Projects() {
                       <td className="p-4 align-middle font-medium">{(project.total_tasks_added ?? 0).toLocaleString()}</td>
                       <td className="p-4 align-middle font-medium text-emerald-600">{(project.total_tasks_completed ?? 0).toLocaleString()}</td>
                       <td className="p-4 align-middle text-slate-600">{project.association ? project.association.toUpperCase() : '—'}</td>
-                      <td className="p-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => openAssignModal(project)}
-                          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600"
-                        >
-                          Assign
-                        </button>
+                      <td className="p-4">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate(`/projects/${project.id}/board/task`, {
+                                state: { project },
+                              })
+                            }
+                            className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600"
+                          >
+                            View board
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => openAssignModal(project)}
+                            className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600"
+                          >
+                            Assign
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
