@@ -49,6 +49,7 @@ function Sidebar() {
               </div>
             </details>
           )}
+          {userRole === 'admin' && navItem({ to: '/tools/json-to-excel', label: 'JSON → Excel' })}
           {navItem({ to: '/projects', label: 'Projects' })}
           {navItem({ to: '/login', label: 'Logout' })}
         </nav>

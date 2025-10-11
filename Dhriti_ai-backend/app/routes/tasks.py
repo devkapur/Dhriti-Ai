@@ -1,6 +1,11 @@
-from typing import List
+import json
+import os
+import tempfile
+from pathlib import Path
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
@@ -20,6 +25,7 @@ from app.schemas.tasks import (
     UserSummary,
 )
 from app.schemas.token import TokenData
+from tools.json_to_excel import json_to_excel
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -294,4 +300,53 @@ def assign_project_to_user(
         avg_task_time_minutes=assignment.avg_task_time_minutes,
         completed_tasks=assignment.completed_tasks or 0,
         pending_tasks=assignment.pending_tasks or 0,
+    )
+
+
+@router.post(
+    "/admin/json-to-excel",
+    response_class=FileResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def convert_json_to_excel(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    sheet_name: str = "Sheet1",
+    records_key: Optional[str] = None,
+    _: TokenData = Depends(require_admin),
+) -> FileResponse:
+    if file.content_type not in {"application/json", "application/octet-stream", "text/json", "text/plain"}:
+        raise HTTPException(status_code=400, detail="Upload must be a JSON file")
+
+    contents = await file.read()
+    if not contents:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+
+    output_path = ""
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
+            output_path = tmp.name
+        sheet = sheet_name.strip() if sheet_name and sheet_name.strip() else "Sheet1"
+        records = records_key.strip() if records_key and records_key.strip() else None
+        json_to_excel(
+            contents,
+            output_path,
+            sheet_name=sheet,
+            records_key=records,
+        )
+    except json.JSONDecodeError as exc:
+        if os.path.exists(output_path):
+            os.remove(output_path)
+        raise HTTPException(status_code=400, detail="Invalid JSON payload") from exc
+    except Exception as exc:  # pragma: no cover - unexpected errors are surfaced to client
+        if os.path.exists(output_path):
+            os.remove(output_path)
+        raise HTTPException(status_code=500, detail="Failed to convert JSON to Excel") from exc
+
+    export_name = f"{Path(file.filename).stem}.xlsx" if file.filename else "output.xlsx"
+    background_tasks.add_task(os.remove, output_path)
+    return FileResponse(
+        output_path,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename=export_name,
     )

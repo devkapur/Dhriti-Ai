@@ -9,6 +9,7 @@ import Tasks from './pages/Tasks.jsx';
 import ProjectTaskBoard from './pages/ProjectTaskBoard.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomeRedirect from './components/HomeRedirect.jsx';
+import JsonToExcel from './pages/JsonToExcel.jsx';
 
 function App() {
   return (
@@ -68,6 +69,14 @@ function App() {
         element={
         <ProtectedRoute allowedRoles={['user', 'expert', 'vendor', 'admin']}>
             <Tasks />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tools/json-to-excel"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <JsonToExcel />
           </ProtectedRoute>
         }
       />
